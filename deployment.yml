@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saml-broker
+  labels:
+    app: saml-broker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: saml-broker
+  template:
+    metadata:
+      labels:
+        app: saml-broker
+    spec:
+      containers:
+      - name: saml-broker
+        image: 692859951624.dkr.ecr.ap-south-1.amazonaws.com/saml-broker:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: FLASK_ENV
+          value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: saml-broker-service
+  labels:
+    app: saml-broker
+spec:
+  selector:
+    app: saml-broker
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 3000
+  type: LoadBalancer
